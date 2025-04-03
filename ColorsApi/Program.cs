@@ -1,12 +1,14 @@
 
+using System.Threading.Tasks;
 using ColorsApi.Configurations;
+using ColorsApi.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace ColorsApi;
 
 public static class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,7 @@ public static class Program
         builder.Services.AddOpenApi();
 
         builder.ConfigureTelemetry();
+        builder.AddDatabase();
 
         var app = builder.Build();
 
@@ -24,6 +27,8 @@ public static class Program
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+
+            await app.ApplyMigrationsAsync();
         }
 
         app.UseHttpsRedirection();
@@ -33,6 +38,6 @@ public static class Program
 
         app.MapControllers();
 
-        app.Run();
+        await app.RunAsync();
     }
 }

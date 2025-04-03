@@ -1,4 +1,4 @@
-﻿namespace ColorsApi;
+﻿namespace ColorsApi.Models;
 
 public class CollectionResponse<T>
 {
