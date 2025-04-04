@@ -1,7 +1,10 @@
-﻿namespace ColorsApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace ColorsApi.Models;
 
 public class Palette
 {
+    [JsonRequired]
     public IReadOnlyCollection<ColorCode> Colors { get; set; }
 
     public static Palette RandomPalette()
@@ -26,4 +29,5 @@ public class PaletteEntity
 {
     public int Id { get; set; }
     public IReadOnlyCollection<ColorEntity> Colors { get; set; }
+    public bool IsArchived { get; set; }
 }
