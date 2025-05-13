@@ -58,7 +58,7 @@ public class ColorsController(ColorsDbContext dbContext) : ControllerBase
 
         await dbContext.SaveChangesAsync();
 
-        return Ok(color);
+        return Ok(new { colorEntity.Id, color });
     }
 
     [HttpDelete("{id}")]

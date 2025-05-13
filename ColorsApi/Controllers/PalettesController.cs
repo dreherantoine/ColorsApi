@@ -2,6 +2,8 @@
 using System.Drawing;
 using ColorsApi.Database;
 using ColorsApi.Models;
+using ColorsApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,26 +11,35 @@ namespace ColorsApi.Controllers;
 
 [ApiController]
 [Route("api/palettes")]
-public class PalettesController(ColorsDbContext dbContext) : ControllerBase
+public class PalettesController(ColorsDbContext dbContext, UserService userService) : ControllerBase
 {
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetColorsPalettes()
     {
+        var userId = await userService.GetUserIdAsync();
+        if (userId.HasNoValue)
+        {
+            return Unauthorized();
+        }
+
         List<PaletteEntity> palettesEntity = await dbContext
             .Palettes
             .Include(p => p.Colors)
             .ToListAsync();
 
-        var palettes = new CollectionResponse<Palette>
+        var palettes = new
         {
-            Items = palettesEntity.Select(p => new Palette
+            Items = palettesEntity.Select(p => new
             {
-                Colors = p.Colors.Select(c => new ColorCode
+                p.Id,
+                Colors = p.Colors.Select(c => new
                 {
-                    Type = c.Type,
-                    Red = c.Red,
-                    Green = c.Green,
-                    Blue = c.Blue
+                    c.Id,
+                    c.Type,
+                    c.Red,
+                    c.Green,
+                    c.Blue
                 }).ToList()
             }).ToList()
         };
@@ -49,12 +60,13 @@ public class PalettesController(ColorsDbContext dbContext) : ControllerBase
             return NotFound();
         }
 
-        var colors = colorsEntity.Select(c => new ColorCode
+        var colors = colorsEntity.Select(c => new
         {
-            Type = c.Type,
-            Red = c.Red,
-            Green = c.Green,
-            Blue = c.Blue
+            c.Id,
+            c.Type,
+            c.Red,
+            c.Green,
+            c.Blue
         }).ToList();
 
         return Ok(colors);
@@ -77,7 +89,16 @@ public class PalettesController(ColorsDbContext dbContext) : ControllerBase
         dbContext.Palettes.Add(paletteEntity);
         await dbContext.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(AddPalette), new { paletteEntity.Id, palette.Colors });
+        var colors = paletteEntity.Colors.Select(c => new
+        {
+            c.Id,
+            c.Type,
+            c.Red,
+            c.Green,
+            c.Blue
+        }).ToList();
+
+        return CreatedAtAction(nameof(AddPalette), new { paletteEntity.Id, colors });
     }
 
     [HttpPost("random")]
@@ -98,7 +119,16 @@ public class PalettesController(ColorsDbContext dbContext) : ControllerBase
         dbContext.Palettes.Add(paletteEntity);
         await dbContext.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(AddRandomPalette), new { paletteEntity.Id, palette.Colors });
+        var colors = paletteEntity.Colors.Select(c => new
+        {
+            c.Id,
+            c.Type,
+            c.Red,
+            c.Green,
+            c.Blue
+        }).ToList();
+
+        return CreatedAtAction(nameof(AddRandomPalette), new { paletteEntity.Id, colors });
     }
 
     [HttpDelete("{id}")]

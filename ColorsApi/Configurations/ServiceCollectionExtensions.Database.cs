@@ -1,4 +1,5 @@
 ﻿using ColorsApi.Database;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ColorsApi.Configurations;
@@ -9,6 +10,8 @@ public static partial class ServiceCollectionExtensions
     {
         builder.Services.AddDbContext<ColorsDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("ColorsDb")));
+        builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("ColorsDb")));
 
         return builder;
     }
@@ -16,13 +19,26 @@ public static partial class ServiceCollectionExtensions
     public static async Task ApplyMigrationsAsync(this WebApplication app)
     {
         using IServiceScope scope = app.Services.CreateScope();
-        await using ColorsDbContext applicationDbContext =
+        await using ColorsDbContext colorsDbContext =
             scope.ServiceProvider.GetRequiredService<ColorsDbContext>();
+        await using AppIdentityDbContext identityDbContext =
+            scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();
 
         try
         {
-            await applicationDbContext.Database.MigrateAsync();
+            await colorsDbContext.Database.MigrateAsync();
             app.Logger.LogInformation("ColorsDatabase migrated successfully.");
+        }
+        catch (Exception ex)
+        {
+            app.Logger.LogError(ex, "An error occurred while migrating the ColorsDatabase.");
+            throw;
+        }
+
+        try
+        {
+            await identityDbContext.Database.MigrateAsync();
+            app.Logger.LogInformation("IdentityDatabase migrated successfully.");
         }
         catch (Exception ex)
         {
