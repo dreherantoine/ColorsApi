@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using ColorsApi.Database;
+using ColorsApi.Dto;
+using ColorsApi.Entities;
 using ColorsApi.Models;
 using ColorsApi.Services;
 using Microsoft.AspNetCore.Identity;

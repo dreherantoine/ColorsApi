@@ -1,4 +1,4 @@
-﻿using ColorsApi.Models;
+﻿using ColorsApi.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

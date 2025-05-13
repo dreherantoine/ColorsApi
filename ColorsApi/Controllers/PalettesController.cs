@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using ColorsApi.Database;
+using ColorsApi.Dto;
+using ColorsApi.Entities;
 using ColorsApi.Models;
 using ColorsApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -73,11 +75,11 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddPalette([FromBody] Palette palette)
+    public async Task<IActionResult> AddPalette([FromBody] PaletteDto paletteDto)
     {
         var paletteEntity = new PaletteEntity
         {
-            Colors = palette.Colors.Select(c => new ColorEntity
+            Colors = paletteDto.Colors.Select(c => new ColorEntity
             {
                 Type = c.Type,
                 Red = c.Red,

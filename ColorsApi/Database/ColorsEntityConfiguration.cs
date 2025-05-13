@@ -1,4 +1,4 @@
-﻿using ColorsApi.Models;
+﻿using ColorsApi.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

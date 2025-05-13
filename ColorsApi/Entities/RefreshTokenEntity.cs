@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace ColorsApi.Models;
+namespace ColorsApi.Entities;
 
 public class RefreshTokenEntity
 {
