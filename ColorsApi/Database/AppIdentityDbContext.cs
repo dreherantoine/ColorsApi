@@ -24,7 +24,7 @@ public class AppIdentityDbContext(DbContextOptions<AppIdentityDbContext> options
         builder.Entity<RefreshTokenEntity>()
             .HasOne(builder => builder.User)
             .WithMany()
-            .HasForeignKey(refreshToken => refreshToken.UserId);
-
+            .HasForeignKey(refreshToken => refreshToken.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

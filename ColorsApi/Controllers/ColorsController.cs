@@ -3,6 +3,8 @@ using ColorsApi.Database;
 using ColorsApi.Dto;
 using ColorsApi.Entities;
 using ColorsApi.Models;
+using ColorsApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,11 +12,18 @@ namespace ColorsApi.Controllers;
 
 [ApiController]
 [Route("api/colors")]
-public class ColorsController(ColorsDbContext dbContext) : ControllerBase
+public class ColorsController(ColorsDbContext dbContext, UserService userService) : ControllerBase
 {
+    [Authorize]
     [HttpPost("{id}")]
     public async Task<IActionResult> AddColor(int id, [FromBody] ColorCodeDto colorDto)
     {
+        var userId = await userService.GetUserIdAsync();
+        if (userId.HasNoValue)
+        {
+            return Unauthorized();
+        }
+
         var paletteEntity = await dbContext
             .Palettes
             .Where(p => p.Id == id)
@@ -40,9 +49,16 @@ public class ColorsController(ColorsDbContext dbContext) : ControllerBase
         return CreatedAtAction(nameof(AddColor), new { colorEntity.Id, colorDto });
     }
 
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateColor(int id, [FromBody] ColorCodeDto colorDto)
     {
+        var userId = await userService.GetUserIdAsync();
+        if (userId.HasNoValue)
+        {
+            return Unauthorized();
+        }
+
         var colorEntity = await dbContext
             .Colors
             .Where(c => c.Id == id)
@@ -63,9 +79,16 @@ public class ColorsController(ColorsDbContext dbContext) : ControllerBase
         return Ok(new { colorEntity.Id, colorDto });
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteColor(int id)
     {
+        var userId = await userService.GetUserIdAsync();
+        if (userId.HasNoValue)
+        {
+            return Unauthorized();
+        }
+
         var colorEntity = await dbContext
             .Colors
             .Where(c => c.Id == id)

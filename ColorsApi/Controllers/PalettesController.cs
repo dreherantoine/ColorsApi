@@ -49,9 +49,16 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
         return Ok(palettes);
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetColorsPalette(int id)
     {
+        var userId = await userService.GetUserIdAsync();
+        if (userId.HasNoValue)
+        {
+            return Unauthorized();
+        }
+
         List<ColorEntity> colorsEntity = await dbContext
             .Colors
             .Where(c => c.PaletteId == id)
@@ -74,9 +81,16 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
         return Ok(colors);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddPalette([FromBody] PaletteDto paletteDto)
     {
+        var userId = await userService.GetUserIdAsync();
+        if (userId.HasNoValue)
+        {
+            return Unauthorized();
+        }
+
         var paletteEntity = new PaletteEntity
         {
             Colors = paletteDto.Colors.Select(c => new ColorEntity
@@ -103,9 +117,16 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
         return CreatedAtAction(nameof(AddPalette), new { paletteEntity.Id, colors });
     }
 
+    [Authorize]
     [HttpPost("random")]
     public async Task<IActionResult> AddRandomPalette()
     {
+        var userId = await userService.GetUserIdAsync();
+        if (userId.HasNoValue)
+        {
+            return Unauthorized();
+        }
+
         var palette = Palette.RandomPalette();
         var paletteEntity = new PaletteEntity
         {
@@ -133,9 +154,16 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
         return CreatedAtAction(nameof(AddRandomPalette), new { paletteEntity.Id, colors });
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePalette(int id)
     {
+        var userId = await userService.GetUserIdAsync();
+        if (userId.HasNoValue)
+        {
+            return Unauthorized();
+        }
+
         var paletteEntity = await dbContext
             .Palettes
             .Where(p => p.Id == id)

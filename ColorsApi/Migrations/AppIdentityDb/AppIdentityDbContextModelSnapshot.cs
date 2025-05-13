@@ -23,7 +23,7 @@ namespace ColorsApi.Migrations.AppIdentityDb
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ColorsApi.Models.RefreshTokenEntity", b =>
+            modelBuilder.Entity("ColorsApi.Entities.RefreshTokenEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -246,7 +246,7 @@ namespace ColorsApi.Migrations.AppIdentityDb
                     b.ToTable("AspNetUserTokens", "auth");
                 });
 
-            modelBuilder.Entity("ColorsApi.Models.RefreshTokenEntity", b =>
+            modelBuilder.Entity("ColorsApi.Entities.RefreshTokenEntity", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
