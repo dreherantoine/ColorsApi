@@ -13,7 +13,11 @@ namespace ColorsApi.Controllers;
 
 [ApiController]
 [Route("api")]
-public class RefreshTokenController(AppIdentityDbContext dbContext, IOptions<JwtAuthOptions> options) : ControllerBase
+public class RefreshTokenController(
+    ColorsDbContext colorsDbContext,
+    AppIdentityDbContext identityDbContext,
+    UserManager<IdentityUser> userManager,
+    IOptions<JwtAuthOptions> options) : ControllerBase
 {
     private readonly JwtAuthOptions jwtAuthOptions = options.Value;
     private string CreateToken(string userId, string email)
@@ -42,17 +46,32 @@ public class RefreshTokenController(AppIdentityDbContext dbContext, IOptions<Jwt
     }
 
     [HttpPost("access-token")]
-    public async Task<IActionResult> Register([FromBody] ColorsUserDto colorUser)
+    public async Task<IActionResult> Register([FromBody] ColorsUserDto colorUserDto)
     {
         var identityUser = new IdentityUser
         {
-            Email = colorUser.Email,
-            PasswordHash = colorUser.Password,
+            Email = colorUserDto.Email,
+            UserName = colorUserDto.Email,
         };
+
+        IdentityResult createUserResult = await userManager.CreateAsync(identityUser, colorUserDto.Password);
+        if (!createUserResult.Succeeded)
+        {
+            return BadRequest(createUserResult.Errors);
+        }
+
+        var user = new ColorsUserEntity
+        {
+            IdentityId = identityUser.Id,
+            Email = colorUserDto.Email,
+        };
+
+        colorsDbContext.Users.Add(user);
+        await colorsDbContext.SaveChangesAsync();
 
         string accessTokens = CreateToken(identityUser.Id, identityUser.Email);
 
-        await dbContext.SaveChangesAsync();
+        await identityDbContext.SaveChangesAsync();
 
         return Ok(accessTokens);
     }
