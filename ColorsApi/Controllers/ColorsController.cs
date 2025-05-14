@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using ColorsApi.Database;
 using ColorsApi.Dto;
 using ColorsApi.Entities;
@@ -26,7 +27,7 @@ public class ColorsController(ColorsDbContext dbContext, UserService userService
 
         var paletteEntity = await dbContext
             .Palettes
-            .Where(p => p.Id == id)
+            .Where(p => p.Id == id && p.UserId == userId.Value)
             .FirstOrDefaultAsync();
 
         if (paletteEntity == null)
@@ -61,7 +62,7 @@ public class ColorsController(ColorsDbContext dbContext, UserService userService
 
         var colorEntity = await dbContext
             .Colors
-            .Where(c => c.Id == id)
+            .Where(c => c.Id == id && c.Palette.UserId == userId.Value)
             .FirstOrDefaultAsync();
 
         if (colorEntity == null)
@@ -91,7 +92,7 @@ public class ColorsController(ColorsDbContext dbContext, UserService userService
 
         var colorEntity = await dbContext
             .Colors
-            .Where(c => c.Id == id)
+            .Where(c => c.Id == id && c.Palette.UserId == userId.Value)
             .FirstOrDefaultAsync();
 
         if (colorEntity == null)

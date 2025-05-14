@@ -11,7 +11,7 @@ public class PalettesEntityConfiguration : IEntityTypeConfiguration<PaletteEntit
         builder.HasKey(palette => palette.Id);
 
         builder.HasMany(palette => palette.Colors)
-            .WithOne()
+            .WithOne(color => color.Palette)
             .HasForeignKey(color => color.PaletteId)
             .OnDelete(DeleteBehavior.Cascade);
 

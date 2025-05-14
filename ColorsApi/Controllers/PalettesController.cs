@@ -28,6 +28,7 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
         List<PaletteEntity> palettesEntity = await dbContext
             .Palettes
             .Include(p => p.Colors)
+            .Where(p => p.UserId == userId.Value)
             .ToListAsync();
 
         var palettes = new
@@ -59,17 +60,18 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
             return Unauthorized();
         }
 
-        List<ColorEntity> colorsEntity = await dbContext
-            .Colors
-            .Where(c => c.PaletteId == id)
-            .ToListAsync();
+        PaletteEntity paletteEntity = await dbContext
+            .Palettes
+            .Include(p => p.Colors)
+            .Where(p => p.Id == id && p.UserId == userId.Value)
+            .FirstOrDefaultAsync();
 
-        if (colorsEntity == null)
+        if (paletteEntity == null)
         {
             return NotFound();
         }
 
-        var colors = colorsEntity.Select(c => new
+        var colors = paletteEntity.Colors.Select(c => new
         {
             c.Id,
             c.Type,
@@ -93,6 +95,7 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
 
         var paletteEntity = new PaletteEntity
         {
+            UserId = userId.Value,
             Colors = paletteDto.Colors.Select(c => new ColorEntity
             {
                 Type = c.Type,
@@ -130,6 +133,7 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
         var palette = Palette.RandomPalette();
         var paletteEntity = new PaletteEntity
         {
+            UserId = userId.Value,
             Colors = palette.Colors.Select(c => new ColorEntity
             {
                 Type = c.Type,
@@ -166,7 +170,7 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
 
         var paletteEntity = await dbContext
             .Palettes
-            .Where(p => p.Id == id)
+            .Where(p => p.Id == id && p.UserId == userId.Value)
             .FirstOrDefaultAsync();
 
         if (paletteEntity == null)
