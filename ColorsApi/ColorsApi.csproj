@@ -8,6 +8,7 @@
 
   <ItemGroup>
 	  <PackageReference Include="CSharpFunctionalExtensions" />
+	  <PackageReference Include="FluentValidation" />
 	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
 	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
 	  <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
@@ -29,6 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Validators\" />
   </ItemGroup>
 
 </Project>

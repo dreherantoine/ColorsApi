@@ -5,6 +5,7 @@ using ColorsApi.Dto;
 using ColorsApi.Entities;
 using ColorsApi.Models;
 using ColorsApi.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -85,8 +86,12 @@ public class PalettesController(ColorsDbContext dbContext, UserService userServi
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> AddPalette([FromBody] PaletteDto paletteDto)
+    public async Task<IActionResult> AddPalette(
+        [FromBody] PaletteDto paletteDto,
+        IValidator<PaletteDto> validator)
     {
+        await validator.ValidateAndThrowAsync(paletteDto);
+
         var userId = await userService.GetUserIdAsync();
         if (userId.HasNoValue)
         {

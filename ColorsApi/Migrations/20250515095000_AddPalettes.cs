@@ -7,24 +7,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ColorsApi.Migrations
 {
     /// <inheritdoc />
-    public partial class AddColors : Migration
+    public partial class AddPalettes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Palettes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IsArchived = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Palettes", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -36,6 +23,27 @@ namespace ColorsApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Palettes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    IsArchived = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Palettes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Palettes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,6 +74,11 @@ namespace ColorsApi.Migrations
                 name: "IX_Colors_PaletteId",
                 table: "Colors",
                 column: "PaletteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Palettes_UserId",
+                table: "Palettes",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -75,10 +88,10 @@ namespace ColorsApi.Migrations
                 name: "Colors");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Palettes");
 
             migrationBuilder.DropTable(
-                name: "Palettes");
+                name: "Users");
         }
     }
 }

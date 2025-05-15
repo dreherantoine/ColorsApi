@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ColorsApi.Migrations.AppIdentityDb
 {
     /// <inheritdoc />
-    public partial class addIdentity : Migration
+    public partial class AddIdentities : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

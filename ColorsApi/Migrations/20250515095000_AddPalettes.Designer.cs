@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ColorsApi.Migrations
 {
     [DbContext(typeof(ColorsDbContext))]
-    [Migration("20250513080723_AddColors")]
-    partial class AddColors
+    [Migration("20250515095000_AddPalettes")]
+    partial class AddPalettes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace ColorsApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ColorsApi.Models.ColorEntity", b =>
+            modelBuilder.Entity("ColorsApi.Entities.ColorEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace ColorsApi.Migrations
                     b.ToTable("Colors");
                 });
 
-            modelBuilder.Entity("ColorsApi.Models.ColorsUserEntity", b =>
+            modelBuilder.Entity("ColorsApi.Entities.ColorsUserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -77,7 +77,7 @@ namespace ColorsApi.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ColorsApi.Models.PaletteEntity", b =>
+            modelBuilder.Entity("ColorsApi.Entities.PaletteEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,21 +88,40 @@ namespace ColorsApi.Migrations
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Palettes");
                 });
 
-            modelBuilder.Entity("ColorsApi.Models.ColorEntity", b =>
+            modelBuilder.Entity("ColorsApi.Entities.ColorEntity", b =>
                 {
-                    b.HasOne("ColorsApi.Models.PaletteEntity", null)
+                    b.HasOne("ColorsApi.Entities.PaletteEntity", "Palette")
                         .WithMany("Colors")
                         .HasForeignKey("PaletteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Palette");
                 });
 
-            modelBuilder.Entity("ColorsApi.Models.PaletteEntity", b =>
+            modelBuilder.Entity("ColorsApi.Entities.PaletteEntity", b =>
+                {
+                    b.HasOne("ColorsApi.Entities.ColorsUserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ColorsApi.Entities.PaletteEntity", b =>
                 {
                     b.Navigation("Colors");
                 });

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ColorsApi.Migrations.AppIdentityDb
 {
     [DbContext(typeof(AppIdentityDbContext))]
-    [Migration("20250513080738_addIdentity")]
-    partial class addIdentity
+    [Migration("20250515095021_AddIdentities")]
+    partial class AddIdentities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +26,7 @@ namespace ColorsApi.Migrations.AppIdentityDb
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ColorsApi.Models.RefreshTokenEntity", b =>
+            modelBuilder.Entity("ColorsApi.Entities.RefreshTokenEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -249,7 +249,7 @@ namespace ColorsApi.Migrations.AppIdentityDb
                     b.ToTable("AspNetUserTokens", "auth");
                 });
 
-            modelBuilder.Entity("ColorsApi.Models.RefreshTokenEntity", b =>
+            modelBuilder.Entity("ColorsApi.Entities.RefreshTokenEntity", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()

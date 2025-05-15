@@ -5,6 +5,7 @@ using ColorsApi.Dto;
 using ColorsApi.Entities;
 using ColorsApi.Models;
 using ColorsApi.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +18,13 @@ public class ColorsController(ColorsDbContext dbContext, UserService userService
 {
     [Authorize]
     [HttpPost("{id}")]
-    public async Task<IActionResult> AddColor(int id, [FromBody] ColorCodeDto colorDto)
+    public async Task<IActionResult> AddColor(
+        int id,
+        [FromBody] ColorCodeDto colorDto,
+        IValidator<ColorCodeDto> validator)
     {
+        await validator.ValidateAndThrowAsync(colorDto);
+
         var userId = await userService.GetUserIdAsync();
         if (userId.HasNoValue)
         {
@@ -52,8 +58,13 @@ public class ColorsController(ColorsDbContext dbContext, UserService userService
 
     [Authorize]
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateColor(int id, [FromBody] ColorCodeDto colorDto)
+    public async Task<IActionResult> UpdateColor(
+        int id,
+        [FromBody] ColorCodeDto colorDto,
+        IValidator<ColorCodeDto> validator)
     {
+        await validator.ValidateAndThrowAsync(colorDto);
+
         var userId = await userService.GetUserIdAsync();
         if (userId.HasNoValue)
         {

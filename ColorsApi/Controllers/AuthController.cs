@@ -6,6 +6,7 @@ using ColorsApi.Dto;
 using ColorsApi.Entities;
 using ColorsApi.Models;
 using ColorsApi.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -59,8 +60,12 @@ public class AuthController(
         => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
     [HttpPost("access-token")]
-    public async Task<ActionResult<AccessTokenDto>> Register([FromBody] RegisterDto registerDto)
+    public async Task<ActionResult<AccessTokenDto>> Register(
+        [FromBody] RegisterDto registerDto,
+        IValidator<RegisterDto> validator)
     {
+        await validator.ValidateAndThrowAsync(registerDto);
+
         if (registerDto.Password != registerDto.PasswordConfirm)
         {
             return BadRequest("Passwords do not match");
